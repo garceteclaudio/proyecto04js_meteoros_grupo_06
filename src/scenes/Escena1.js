@@ -4,9 +4,10 @@ export default class Escena1 extends Phaser.Scene {
     this.jugador = null;
     this.grupoMeteoros = null;
     this.cursors = null;
-    this.teclas = null; // propiedad para las teclas WASD
+    this.teclas = null;
     this.puntaje = 0;
-    this.textoDePuntaje = null; // Cambiado a null
+    this.textoDePuntaje = null;
+    this.juegoTerminado = false;
   }
 
   preload() {
@@ -18,9 +19,9 @@ export default class Escena1 extends Phaser.Scene {
   create() {
     this.add.image(400, 300, "cielo");
     this.jugador = this.physics.add.sprite(400, 550, "nave");
-    this.jugador.setCollideWorldBounds(true); // evita que salga de la pantalla
+    this.jugador.setCollideWorldBounds(true);
 
-    this.grupoMeteoros = this.physics.add.group(); // creando el grupo de meteoritos
+    this.grupoMeteoros = this.physics.add.group();
 
     this.time.addEvent({
       delay: 1000,
@@ -29,18 +30,16 @@ export default class Escena1 extends Phaser.Scene {
       loop: true,
     });
 
-    // Evento para incrementar el puntaje cada segundo
-    this.time.addEvent({
-      delay: 1000,
+    // Evento para incrementar el puntaje cada décima de segundo
+    this.incrementoPuntajeEvento = this.time.addEvent({
+      delay: 100,
       callback: this.incrementarPuntaje,
       callbackScope: this,
       loop: true,
     });
 
-    // Crear las teclas de flechas
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // Crear teclas WASD
     this.teclas = this.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
       left: Phaser.Input.Keyboard.KeyCodes.A,
@@ -70,35 +69,45 @@ export default class Escena1 extends Phaser.Scene {
   }
 
   incrementarPuntaje() {
-    this.puntaje += 1; // Incrementar el puntaje
-    this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`); // Actualizar el texto del puntaje
+    if (!this.juegoTerminado) {
+      this.puntaje += 1;
+      this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
+    }
   }
 
   gameOver(jugador) {
-    this.physics.pause();
+    this.juegoTerminado = true; // El juego ha terminado
+    this.physics.pause(); // Pausa la física del juego
+    this.incrementoPuntajeEvento.remove(); // Detiene el evento que incrementa el puntaje
     jugador.setTint(0xff0000);
-    console.log("Game over");
+
+    this.add
+      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
+        fontSize: "30px",
+        fill: "#fff",
+        fontStyle: "bold",
+        align: "center",
+      })
+      .setOrigin(0.5); // Centrar el texto en las coordenadas
   }
 
   update() {
+    if (this.juegoTerminado) return; // No actualizar si el juego ha terminado
+
     this.jugador.setVelocity(0); // Resetea las velocidades antes de actualizar
 
-    // Movimiento hacia la izquierda
     if (this.cursors.left.isDown || this.teclas.left.isDown) {
       this.jugador.setVelocityX(-300);
     }
 
-    // Movimiento hacia la derecha
     if (this.cursors.right.isDown || this.teclas.right.isDown) {
       this.jugador.setVelocityX(300);
     }
 
-    // Movimiento hacia arriba
     if (this.cursors.up.isDown || this.teclas.up.isDown) {
       this.jugador.setVelocityY(-300);
     }
 
-    // Movimiento hacia abajo
     if (this.cursors.down.isDown || this.teclas.down.isDown) {
       this.jugador.setVelocityY(300);
     }
