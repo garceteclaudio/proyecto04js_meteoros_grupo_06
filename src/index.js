@@ -12,6 +12,7 @@ let config = {
     },
   },
   scene: [Escena1],
+  parent: "game-container",
 };
 
 let game = new Phaser.Game(config);
