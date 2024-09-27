@@ -6,7 +6,7 @@ const app = express();
 app.get("/", (req, res) => {
   //res.end("Bienvenidos a mi server backend");
   //console.log(__dirname);
-  res.sendFile(__dirname + "/public/resources/views/index.html");
+  res.sendFile(__dirname + "/public/views/index.html");
 });
 
 //routing, accesos directos a los recursos con los q trabajamos
@@ -16,5 +16,7 @@ app.use("/node_modules", express.static(__dirname + "/node_modules"));
 
 //listening
 app.listen(5000, () => {
-  console.log("Servidor node correindo perfectamente");
+  console.log("Iniciando el servidore Node...");
+  console.log("¡El servidor node se está ejecutando!");
 });
+
