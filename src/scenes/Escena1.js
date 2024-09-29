@@ -11,17 +11,35 @@ export default class Escena1 extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("cielo", "/public/resources/images/cielo.png");
-    this.load.image("nave", "/public/resources/images/nave.png");
-    this.load.image("meteoro", "/public/resources/images/meteoro.png");
+    this.load.image("espacio", "/public/resources/images/espacio.png");
+    this.load.spritesheet("nave", "/public/resources/images/nave.png",  {frameWidth:60, frameHeight: 60});
+    this.load.image("meteoro", "/public/resources/images/meteoro.png", {frameWidth:56, frameHeight: 60});
   }
 
   create() {
-    this.add.image(400, 300, "cielo");
-    this.jugador = this.physics.add.sprite(400, 550, "nave");
+    this.add.image(400, 300, "espacio");
+    this.jugador = this.physics.add.sprite(400, 550, "nave", 0);
     this.jugador.setCollideWorldBounds(true);
 
     this.grupoMeteoros = this.physics.add.group();
+
+    this.anims.create({
+      key: "izquierda",
+      frames:[{ key: "nave", frame : 1 }],
+      frameRate: 20
+    })
+
+    this.anims.create({
+      key: "normal",
+      frames:[{ key: "nave", frame : 0 }],
+      frameRate: 20
+    })
+
+    this.anims.create({
+      key: "derecha",
+      frames:[{ key: "nave", frame : 2 }],
+      frameRate: 20
+    })
 
     this.time.addEvent({
       delay: 1000,
@@ -98,18 +116,18 @@ export default class Escena1 extends Phaser.Scene {
 
     if (this.cursors.left.isDown || this.teclas.left.isDown) {
       this.jugador.setVelocityX(-300);
-    }
-
-    if (this.cursors.right.isDown || this.teclas.right.isDown) {
+      this.jugador.anims.play("izquierda", true);
+    } else if (this.cursors.right.isDown || this.teclas.right.isDown) { 
       this.jugador.setVelocityX(300);
-    }
-
-    if (this.cursors.up.isDown || this.teclas.up.isDown) {
+      this.jugador.anims.play("derecha", true);
+    } else if (this.cursors.up.isDown || this.teclas.up.isDown) {
       this.jugador.setVelocityY(-300);
-    }
-
-    if (this.cursors.down.isDown || this.teclas.down.isDown) {
+      this.jugador.anims.play("normal", true);
+    } else if (this.cursors.down.isDown || this.teclas.down.isDown) {
       this.jugador.setVelocityY(300);
+      this.jugador.anims.play("normal", true);
+    } else {
+      this.jugador.anims.play("normal", true);
     }
   }
 }
