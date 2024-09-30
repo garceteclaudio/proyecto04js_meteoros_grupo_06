@@ -10,10 +10,88 @@ export default class Escena1 extends Phaser.Scene {
     this.juegoTerminado = false;
   }
 
+<<<<<<< Updated upstream
   preload() {
     this.load.image("cielo", "/public/resources/images/cielo.png");
     this.load.image("nave", "/public/resources/images/nave.png");
     this.load.image("meteoro", "/public/resources/images/meteoro.png");
+=======
+  generarMeteoros() {
+    if (this.juegoTerminado) return;
+
+    const x = Phaser.Math.Between(0, 800);
+    const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
+    meteoro.setVelocityY(200);
+  }
+
+  dispararBala() {
+    const tiempoActual = this.time.now;
+
+    if (tiempoActual > this.siguienteDisparo) {
+      const bala = this.grupoBalas.get(this.jugador.x, this.jugador.y - 50);
+
+      if (bala) {
+        bala.setActive(true);
+        bala.setVisible(true);
+        bala.setVelocityY(-500);
+        this.siguienteDisparo = tiempoActual + 300;
+
+        this.sonidoBala.play();
+      }
+    }
+  }
+
+  destruirMeteoro(bala, meteoro) {
+    // Destruir meteoro y bala
+    meteoro.destroy();
+    bala.destroy();
+
+    // Reproducir el sonido de la bala
+    this.sonidoExplosion.play();
+  }
+
+  incrementarPuntaje() {
+    if (!this.juegoTerminado) {
+      this.puntaje += 1;
+      this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
+    }
+  }
+  gameOver(jugador) {
+    this.juegoTerminado = true;
+    this.physics.pause();
+    this.incrementoPuntajeEvento.remove();
+    jugador.setTint(0xff0000);
+
+    this.sonidoGrito.play();
+
+    this.add
+      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
+        fontSize: "30px",
+        fill: "#fff",
+        fontStyle: "bold",
+        align: "center",
+      })
+      .setOrigin(0.5);
+
+    this.musicaFondo.stop();
+  }
+
+  preload() {
+    this.load.image("espacio", "/public/resources/images/espacio.png");
+    this.load.spritesheet("nave", "/public/resources/images/nave.png", {
+      frameWidth: 60,
+      frameHeight: 60,
+    });
+    this.load.image("meteoro", "/public/resources/images/meteoro.png", {
+      frameWidth: 56,
+      frameHeight: 60,
+    });
+    this.load.image("bala", "/public/resources/images/bala.png");
+    this.load.audio("musica", "/public/resources/sounds/musica.mp3");
+    this.load.audio("colision", "/public/resources/sounds/colision.mp3");
+    this.load.audio("disparo", "/public/resources/sounds/disparo.mp3");
+    this.load.audio("explosion", "/public/resources/sounds/explosion.mp3");
+>>>>>>> Stashed changes
   }
 
   create() {
@@ -61,6 +139,7 @@ export default class Escena1 extends Phaser.Scene {
     });
   }
 
+<<<<<<< Updated upstream
   generarMeteoros() {
     const x = Phaser.Math.Between(0, 800);
     const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
@@ -89,6 +168,16 @@ export default class Escena1 extends Phaser.Scene {
         align: "center",
       })
       .setOrigin(0.5); // Centrar el texto en las coordenadas
+=======
+    this.musicaFondo = this.sound.add("musica", { loop: true });
+    this.musicaFondo.play();
+
+    this.sonidoGrito = this.sound.add("colision");
+
+    this.sonidoBala = this.sound.add("disparo");
+
+    this.sonidoExplosion = this.sound.add("explosion");
+>>>>>>> Stashed changes
   }
 
   update() {
