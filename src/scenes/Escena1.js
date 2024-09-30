@@ -8,12 +8,22 @@ export default class Escena1 extends Phaser.Scene {
     this.puntaje = 0;
     this.textoDePuntaje = null;
     this.juegoTerminado = false;
+    this.musicaFondo = null;
+    this.sonidoGrito = null; // Variable para el sonido del grito
   }
 
   preload() {
     this.load.image("espacio", "/public/resources/images/espacio.png");
-    this.load.spritesheet("nave", "/public/resources/images/nave.png",  {frameWidth:60, frameHeight: 60});
-    this.load.image("meteoro", "/public/resources/images/meteoro.png", {frameWidth:56, frameHeight: 60});
+    this.load.spritesheet("nave", "/public/resources/images/nave.png", {
+      frameWidth: 60,
+      frameHeight: 60,
+    });
+    this.load.image("meteoro", "/public/resources/images/meteoro.png", {
+      frameWidth: 56,
+      frameHeight: 60,
+    });
+    this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3"); // Cargar la música de fondo
+    this.load.audio("grito", "/public/resources/sounds/grito.mp3"); // Cargar el sonido del grito
   }
 
   create() {
@@ -25,21 +35,21 @@ export default class Escena1 extends Phaser.Scene {
 
     this.anims.create({
       key: "izquierda",
-      frames:[{ key: "nave", frame : 1 }],
-      frameRate: 20
-    })
+      frames: [{ key: "nave", frame: 1 }],
+      frameRate: 20,
+    });
 
     this.anims.create({
       key: "normal",
-      frames:[{ key: "nave", frame : 0 }],
-      frameRate: 20
-    })
+      frames: [{ key: "nave", frame: 0 }],
+      frameRate: 20,
+    });
 
     this.anims.create({
       key: "derecha",
-      frames:[{ key: "nave", frame : 2 }],
-      frameRate: 20
-    })
+      frames: [{ key: "nave", frame: 2 }],
+      frameRate: 20,
+    });
 
     this.time.addEvent({
       delay: 1000,
@@ -48,7 +58,6 @@ export default class Escena1 extends Phaser.Scene {
       loop: true,
     });
 
-    // Evento para incrementar el puntaje cada décima de segundo
     this.incrementoPuntajeEvento = this.time.addEvent({
       delay: 100,
       callback: this.incrementarPuntaje,
@@ -77,12 +86,18 @@ export default class Escena1 extends Phaser.Scene {
       fontSize: "32px",
       fill: "#fff",
     });
+
+    // Reproducir la música de fondo
+    this.musicaFondo = this.sound.add("musicaFondo", { loop: true });
+    this.musicaFondo.play(); // Iniciar la música
+
+    // Cargar el sonido del grito
+    this.sonidoGrito = this.sound.add("grito");
   }
 
   generarMeteoros() {
     const x = Phaser.Math.Between(0, 800);
     const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
-
     meteoro.setVelocityY(200);
   }
 
@@ -94,10 +109,13 @@ export default class Escena1 extends Phaser.Scene {
   }
 
   gameOver(jugador) {
-    this.juegoTerminado = true; // El juego ha terminado
-    this.physics.pause(); // Pausa la física del juego
-    this.incrementoPuntajeEvento.remove(); // Detiene el evento que incrementa el puntaje
+    this.juegoTerminado = true;
+    this.physics.pause();
+    this.incrementoPuntajeEvento.remove();
     jugador.setTint(0xff0000);
+
+    // Reproducir el sonido del grito
+    this.sonidoGrito.play();
 
     this.add
       .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
@@ -106,18 +124,20 @@ export default class Escena1 extends Phaser.Scene {
         fontStyle: "bold",
         align: "center",
       })
-      .setOrigin(0.5); // Centrar el texto en las coordenadas
+      .setOrigin(0.5);
+
+    this.musicaFondo.stop(); // Detener la música cuando el juego termina
   }
 
   update() {
-    if (this.juegoTerminado) return; // No actualizar si el juego ha terminado
+    if (this.juegoTerminado) return;
 
-    this.jugador.setVelocity(0); // Resetea las velocidades antes de actualizar
+    this.jugador.setVelocity(0);
 
     if (this.cursors.left.isDown || this.teclas.left.isDown) {
       this.jugador.setVelocityX(-300);
       this.jugador.anims.play("izquierda", true);
-    } else if (this.cursors.right.isDown || this.teclas.right.isDown) { 
+    } else if (this.cursors.right.isDown || this.teclas.right.isDown) {
       this.jugador.setVelocityX(300);
       this.jugador.anims.play("derecha", true);
     } else if (this.cursors.up.isDown || this.teclas.up.isDown) {
