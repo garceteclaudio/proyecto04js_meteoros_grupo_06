@@ -64,16 +64,9 @@ export default class Escena1 extends Phaser.Scene {
 
     this.sonidoGrito.play();
 
-    this.add
-      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
-        fontSize: "30px",
-        fill: "#fff",
-        fontStyle: "bold",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
     this.musicaFondo.stop();
+    
+    this.scene.start("GameOver", {puntaje: this.puntaje});
   }
   preload() {
     this.load.image("espacio", "/public/resources/images/espacio.png");
@@ -205,6 +198,10 @@ export default class Escena1 extends Phaser.Scene {
     // Disparar balas cuando se presiona la barra espaciadora
     if (this.teclas.space.isDown) {
       this.dispararBala();
+    }
+
+    if(this.jugador.y > this.scale.height){
+      this.gameOver(this.jugador)
     }
   }
 }
