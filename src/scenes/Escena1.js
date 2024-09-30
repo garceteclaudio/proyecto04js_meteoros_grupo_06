@@ -3,19 +3,19 @@ export default class Escena1 extends Phaser.Scene {
     super("Escena 1");
     this.jugador = null;
     this.grupoMeteoros = null;
+    this.grupoBalas = null;
     this.cursors = null;
     this.teclas = null;
     this.puntaje = 0;
     this.textoDePuntaje = null;
     this.juegoTerminado = false;
+    this.musicaFondo = null;
+    this.sonidoGrito = null;
+    this.siguienteDisparo = 0;
+    this.sonidoBala = null;
+    this.sonidoExplosion = null;
   }
 
-<<<<<<< Updated upstream
-  preload() {
-    this.load.image("cielo", "/public/resources/images/cielo.png");
-    this.load.image("nave", "/public/resources/images/nave.png");
-    this.load.image("meteoro", "/public/resources/images/meteoro.png");
-=======
   generarMeteoros() {
     if (this.juegoTerminado) return;
 
@@ -91,15 +91,37 @@ export default class Escena1 extends Phaser.Scene {
     this.load.audio("colision", "/public/resources/sounds/colision.mp3");
     this.load.audio("disparo", "/public/resources/sounds/disparo.mp3");
     this.load.audio("explosion", "/public/resources/sounds/explosion.mp3");
->>>>>>> Stashed changes
   }
 
   create() {
-    this.add.image(400, 300, "cielo");
-    this.jugador = this.physics.add.sprite(400, 550, "nave");
+    this.add.image(400, 300, "espacio");
+    this.jugador = this.physics.add.sprite(400, 550, "nave", 0);
     this.jugador.setCollideWorldBounds(true);
 
+    this.grupoBalas = this.physics.add.group({
+      defaultKey: "bala",
+      maxSize: 20,
+    });
+
     this.grupoMeteoros = this.physics.add.group();
+
+    this.anims.create({
+      key: "izquierda",
+      frames: [{ key: "nave", frame: 1 }],
+      frameRate: 20,
+    });
+
+    this.anims.create({
+      key: "normal",
+      frames: [{ key: "nave", frame: 0 }],
+      frameRate: 20,
+    });
+
+    this.anims.create({
+      key: "derecha",
+      frames: [{ key: "nave", frame: 2 }],
+      frameRate: 20,
+    });
 
     this.time.addEvent({
       delay: 1000,
@@ -108,7 +130,6 @@ export default class Escena1 extends Phaser.Scene {
       loop: true,
     });
 
-    // Evento para incrementar el puntaje cada décima de segundo
     this.incrementoPuntajeEvento = this.time.addEvent({
       delay: 100,
       callback: this.incrementarPuntaje,
@@ -123,6 +144,7 @@ export default class Escena1 extends Phaser.Scene {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       right: Phaser.Input.Keyboard.KeyCodes.D,
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE, // Barra espaciadora para disparar
     });
 
     this.physics.add.collider(
@@ -133,72 +155,51 @@ export default class Escena1 extends Phaser.Scene {
       this
     );
 
+    // Colisión entre balas y meteoros
+    this.physics.add.collider(
+      this.grupoBalas,
+      this.grupoMeteoros,
+      this.destruirMeteoro,
+      null,
+      this
+    );
+
     this.textoDePuntaje = this.add.text(16, 16, "Puntaje: 0", {
       fontSize: "32px",
       fill: "#fff",
     });
-  }
 
-<<<<<<< Updated upstream
-  generarMeteoros() {
-    const x = Phaser.Math.Between(0, 800);
-    const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
-
-    meteoro.setVelocityY(200);
-  }
-
-  incrementarPuntaje() {
-    if (!this.juegoTerminado) {
-      this.puntaje += 1;
-      this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
-    }
-  }
-
-  gameOver(jugador) {
-    this.juegoTerminado = true; // El juego ha terminado
-    this.physics.pause(); // Pausa la física del juego
-    this.incrementoPuntajeEvento.remove(); // Detiene el evento que incrementa el puntaje
-    jugador.setTint(0xff0000);
-
-    this.add
-      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
-        fontSize: "30px",
-        fill: "#fff",
-        fontStyle: "bold",
-        align: "center",
-      })
-      .setOrigin(0.5); // Centrar el texto en las coordenadas
-=======
     this.musicaFondo = this.sound.add("musica", { loop: true });
     this.musicaFondo.play();
-
     this.sonidoGrito = this.sound.add("colision");
-
     this.sonidoBala = this.sound.add("disparo");
-
     this.sonidoExplosion = this.sound.add("explosion");
->>>>>>> Stashed changes
   }
 
   update() {
-    if (this.juegoTerminado) return; // No actualizar si el juego ha terminado
+    if (this.juegoTerminado) return;
 
-    this.jugador.setVelocity(0); // Resetea las velocidades antes de actualizar
+    this.jugador.setVelocity(0);
 
     if (this.cursors.left.isDown || this.teclas.left.isDown) {
       this.jugador.setVelocityX(-300);
-    }
-
-    if (this.cursors.right.isDown || this.teclas.right.isDown) {
+      this.jugador.anims.play("izquierda", true);
+    } else if (this.cursors.right.isDown || this.teclas.right.isDown) {
       this.jugador.setVelocityX(300);
-    }
-
-    if (this.cursors.up.isDown || this.teclas.up.isDown) {
+      this.jugador.anims.play("derecha", true);
+    } else if (this.cursors.up.isDown || this.teclas.up.isDown) {
       this.jugador.setVelocityY(-300);
+      this.jugador.anims.play("normal", true);
+    } else if (this.cursors.down.isDown || this.teclas.down.isDown) {
+      this.jugador.setVelocityY(300);
+      this.jugador.anims.play("normal", true);
+    } else {
+      this.jugador.anims.play("normal", true);
     }
 
-    if (this.cursors.down.isDown || this.teclas.down.isDown) {
-      this.jugador.setVelocityY(300);
+    // Disparar balas cuando se presiona la barra espaciadora
+    if (this.teclas.space.isDown) {
+      this.dispararBala();
     }
   }
 }
