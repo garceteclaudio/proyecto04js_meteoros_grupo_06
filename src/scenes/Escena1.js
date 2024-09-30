@@ -17,8 +17,6 @@ export default class Escena1 extends Phaser.Scene {
   }
 
   generarMeteoros() {
-    if (this.juegoTerminado) return;
-
     const x = Phaser.Math.Between(0, 800);
     const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
     meteoro.setVelocityY(200);
@@ -75,7 +73,6 @@ export default class Escena1 extends Phaser.Scene {
 
     this.musicaFondo.stop();
   }
-
   preload() {
     this.load.image("espacio", "/public/resources/images/espacio.png");
     this.load.spritesheet("nave", "/public/resources/images/nave.png", {
@@ -87,10 +84,13 @@ export default class Escena1 extends Phaser.Scene {
       frameHeight: 60,
     });
     this.load.image("bala", "/public/resources/images/bala.png");
-    this.load.audio("musica", "/public/resources/sounds/musica.mp3");
-    this.load.audio("colision", "/public/resources/sounds/colision.mp3");
-    this.load.audio("disparo", "/public/resources/sounds/disparo.mp3");
-    this.load.audio("explosion", "/public/resources/sounds/explosion.mp3");
+    this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3");
+    this.load.audio("grito", "/public/resources/sounds/grito.mp3");
+    this.load.audio("balaSonido", "/public/resources/sounds/balaSonido.mp3");
+    this.load.audio(
+      "sonidoExplosion",
+      "/public/resources/sounds/sonidoExplosion.mp3"
+    );
   }
 
   create() {
@@ -169,11 +169,14 @@ export default class Escena1 extends Phaser.Scene {
       fill: "#fff",
     });
 
-    this.musicaFondo = this.sound.add("musica", { loop: true });
+    this.musicaFondo = this.sound.add("musicaFondo", { loop: true });
     this.musicaFondo.play();
-    this.sonidoGrito = this.sound.add("colision");
-    this.sonidoBala = this.sound.add("disparo");
-    this.sonidoExplosion = this.sound.add("explosion");
+
+    this.sonidoGrito = this.sound.add("grito");
+
+    this.sonidoBala = this.sound.add("balaSonido");
+
+    this.sonidoExplosion = this.sound.add("sonidoExplosion");
   }
 
   update() {
