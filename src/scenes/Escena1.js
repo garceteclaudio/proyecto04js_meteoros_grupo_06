@@ -3,13 +3,16 @@ export default class Escena1 extends Phaser.Scene {
     super("Escena 1");
     this.jugador = null;
     this.grupoMeteoros = null;
+    this.grupoBalas = null;
     this.cursors = null;
     this.teclas = null;
     this.puntaje = 0;
     this.textoDePuntaje = null;
     this.juegoTerminado = false;
     this.musicaFondo = null;
-    this.sonidoGrito = null; // Variable para el sonido del grito
+    this.sonidoGrito = null;
+    this.siguienteDisparo = 0;
+    this.sonidoBala = null;
   }
 
   preload() {
@@ -22,14 +25,21 @@ export default class Escena1 extends Phaser.Scene {
       frameWidth: 56,
       frameHeight: 60,
     });
-    this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3"); // Cargar la música de fondo
-    this.load.audio("grito", "/public/resources/sounds/grito.mp3"); // Cargar el sonido del grito
+    this.load.image("bala", "/public/resources/images/bala.png");
+    this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3");
+    this.load.audio("grito", "/public/resources/sounds/grito.mp3");
+    this.load.audio("balaSonido", "/public/resources/sounds/balaSonido.mp3");
   }
 
   create() {
     this.add.image(400, 300, "espacio");
     this.jugador = this.physics.add.sprite(400, 550, "nave", 0);
     this.jugador.setCollideWorldBounds(true);
+
+    this.grupoBalas = this.physics.add.group({
+      defaultKey: "bala",
+      maxSize: 20,
+    });
 
     this.grupoMeteoros = this.physics.add.group();
 
@@ -72,6 +82,7 @@ export default class Escena1 extends Phaser.Scene {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       right: Phaser.Input.Keyboard.KeyCodes.D,
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE, // Barra espaciadora para disparar
     });
 
     this.physics.add.collider(
@@ -82,23 +93,58 @@ export default class Escena1 extends Phaser.Scene {
       this
     );
 
+    // Colisión entre balas y meteoros
+    this.physics.add.collider(
+      this.grupoBalas,
+      this.grupoMeteoros,
+      this.destruirMeteoro,
+      null,
+      this
+    );
+
     this.textoDePuntaje = this.add.text(16, 16, "Puntaje: 0", {
       fontSize: "32px",
       fill: "#fff",
     });
 
-    // Reproducir la música de fondo
     this.musicaFondo = this.sound.add("musicaFondo", { loop: true });
-    this.musicaFondo.play(); // Iniciar la música
+    this.musicaFondo.play();
 
-    // Cargar el sonido del grito
     this.sonidoGrito = this.sound.add("grito");
+
+    this.sonidoBala = this.sound.add("balaSonido");
   }
 
   generarMeteoros() {
     const x = Phaser.Math.Between(0, 800);
     const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
     meteoro.setVelocityY(200);
+  }
+
+  dispararBala() {
+    const tiempoActual = this.time.now;
+
+    if (tiempoActual > this.siguienteDisparo) {
+      const bala = this.grupoBalas.get(this.jugador.x, this.jugador.y - 50);
+
+      if (bala) {
+        bala.setActive(true);
+        bala.setVisible(true);
+        bala.setVelocityY(-500);
+        this.siguienteDisparo = tiempoActual + 300;
+
+        this.sonidoBala.play();
+      }
+    }
+  }
+
+  destruirMeteoro(bala, meteoro) {
+    // Destruir meteoro y bala
+    meteoro.destroy();
+    bala.destroy();
+
+    // Reproducir el sonido de la bala
+    this.sonidoBala.play();
   }
 
   incrementarPuntaje() {
@@ -114,7 +160,6 @@ export default class Escena1 extends Phaser.Scene {
     this.incrementoPuntajeEvento.remove();
     jugador.setTint(0xff0000);
 
-    // Reproducir el sonido del grito
     this.sonidoGrito.play();
 
     this.add
@@ -126,7 +171,7 @@ export default class Escena1 extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.musicaFondo.stop(); // Detener la música cuando el juego termina
+    this.musicaFondo.stop();
   }
 
   update() {
@@ -148,6 +193,11 @@ export default class Escena1 extends Phaser.Scene {
       this.jugador.anims.play("normal", true);
     } else {
       this.jugador.anims.play("normal", true);
+    }
+
+    // Disparar balas cuando se presiona la barra espaciadora
+    if (this.teclas.space.isDown) {
+      this.dispararBala();
     }
   }
 }
