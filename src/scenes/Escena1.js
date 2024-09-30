@@ -17,6 +17,8 @@ export default class Escena1 extends Phaser.Scene {
   }
 
   generarMeteoros() {
+    if (this.juegoTerminado) return;
+    
     const x = Phaser.Math.Between(0, 800);
     const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
     meteoro.setVelocityY(200);
