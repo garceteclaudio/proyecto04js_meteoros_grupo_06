@@ -13,8 +13,66 @@ export default class Escena1 extends Phaser.Scene {
     this.sonidoGrito = null;
     this.siguienteDisparo = 0;
     this.sonidoBala = null;
+    this.sonidoExplosion = null;
   }
 
+  generarMeteoros() {
+    const x = Phaser.Math.Between(0, 800);
+    const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
+    meteoro.setVelocityY(200);
+  }
+
+  dispararBala() {
+    const tiempoActual = this.time.now;
+
+    if (tiempoActual > this.siguienteDisparo) {
+      const bala = this.grupoBalas.get(this.jugador.x, this.jugador.y - 50);
+
+      if (bala) {
+        bala.setActive(true);
+        bala.setVisible(true);
+        bala.setVelocityY(-500);
+        this.siguienteDisparo = tiempoActual + 300;
+
+        this.sonidoBala.play();
+      }
+    }
+  }
+
+  destruirMeteoro(bala, meteoro) {
+    // Destruir meteoro y bala
+    meteoro.destroy();
+    bala.destroy();
+
+    // Reproducir el sonido de la bala
+    this.sonidoExplosion.play();
+  }
+
+  incrementarPuntaje() {
+    if (!this.juegoTerminado) {
+      this.puntaje += 1;
+      this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
+    }
+  }
+  gameOver(jugador) {
+    this.juegoTerminado = true;
+    this.physics.pause();
+    this.incrementoPuntajeEvento.remove();
+    jugador.setTint(0xff0000);
+
+    this.sonidoGrito.play();
+
+    this.add
+      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
+        fontSize: "30px",
+        fill: "#fff",
+        fontStyle: "bold",
+        align: "center",
+      })
+      .setOrigin(0.5);
+
+    this.musicaFondo.stop();
+  }
   preload() {
     this.load.image("espacio", "/public/resources/images/espacio.png");
     this.load.spritesheet("nave", "/public/resources/images/nave.png", {
@@ -29,6 +87,10 @@ export default class Escena1 extends Phaser.Scene {
     this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3");
     this.load.audio("grito", "/public/resources/sounds/grito.mp3");
     this.load.audio("balaSonido", "/public/resources/sounds/balaSonido.mp3");
+    this.load.audio(
+      "sonidoExplosion",
+      "/public/resources/sounds/sonidoExplosion.mp3"
+    );
   }
 
   create() {
@@ -113,65 +175,8 @@ export default class Escena1 extends Phaser.Scene {
     this.sonidoGrito = this.sound.add("grito");
 
     this.sonidoBala = this.sound.add("balaSonido");
-  }
 
-  generarMeteoros() {
-    const x = Phaser.Math.Between(0, 800);
-    const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
-    meteoro.setVelocityY(200);
-  }
-
-  dispararBala() {
-    const tiempoActual = this.time.now;
-
-    if (tiempoActual > this.siguienteDisparo) {
-      const bala = this.grupoBalas.get(this.jugador.x, this.jugador.y - 50);
-
-      if (bala) {
-        bala.setActive(true);
-        bala.setVisible(true);
-        bala.setVelocityY(-500);
-        this.siguienteDisparo = tiempoActual + 300;
-
-        this.sonidoBala.play();
-      }
-    }
-  }
-
-  destruirMeteoro(bala, meteoro) {
-    // Destruir meteoro y bala
-    meteoro.destroy();
-    bala.destroy();
-
-    // Reproducir el sonido de la bala
-    this.sonidoBala.play();
-  }
-
-  incrementarPuntaje() {
-    if (!this.juegoTerminado) {
-      this.puntaje += 1;
-      this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
-    }
-  }
-
-  gameOver(jugador) {
-    this.juegoTerminado = true;
-    this.physics.pause();
-    this.incrementoPuntajeEvento.remove();
-    jugador.setTint(0xff0000);
-
-    this.sonidoGrito.play();
-
-    this.add
-      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
-        fontSize: "30px",
-        fill: "#fff",
-        fontStyle: "bold",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
-    this.musicaFondo.stop();
+    this.sonidoExplosion = this.sound.add("sonidoExplosion");
   }
 
   update() {
