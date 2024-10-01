@@ -18,7 +18,7 @@ export default class Escena1 extends Phaser.Scene {
 
   generarMeteoros() {
     if (this.juegoTerminado) return;
-    
+
     const x = Phaser.Math.Between(0, 800);
     const meteoro = this.grupoMeteoros.create(x, 0, "meteoro");
     meteoro.setVelocityY(200);
@@ -56,25 +56,7 @@ export default class Escena1 extends Phaser.Scene {
       this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
     }
   }
-  gameOver(jugador) {
-    this.juegoTerminado = true;
-    this.physics.pause();
-    this.incrementoPuntajeEvento.remove();
-    jugador.setTint(0xff0000);
 
-    this.sonidoGrito.play();
-
-    this.add
-      .text(400, 300, `Has muerto! Juego Terminado. Puntaje: ${this.puntaje}`, {
-        fontSize: "30px",
-        fill: "#fff",
-        fontStyle: "bold",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
-    this.musicaFondo.stop();
-  }
   preload() {
     this.load.image("espacio", "/public/resources/images/espacio.png");
     this.load.spritesheet("nave", "/public/resources/images/nave.png", {
@@ -152,7 +134,10 @@ export default class Escena1 extends Phaser.Scene {
     this.physics.add.collider(
       this.jugador,
       this.grupoMeteoros,
-      this.gameOver,
+      (jugador, meteoro) => {
+        meteoro.destroy(); // Destruye el meteoro
+        this.scene.start("GameOver", { puntaje: this.puntaje }); // Inicia la escena GameOver y pasa el puntaje
+      },
       null,
       this
     );
