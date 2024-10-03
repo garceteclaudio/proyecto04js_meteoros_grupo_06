@@ -131,12 +131,15 @@ export default class Escena1 extends Phaser.Scene {
       space: Phaser.Input.Keyboard.KeyCodes.SPACE, // Barra espaciadora para disparar
     });
 
+    // aca tengo q poner esto: this.musicaFondo.stop();
     this.physics.add.collider(
       this.jugador,
       this.grupoMeteoros,
       (jugador, meteoro) => {
         meteoro.destroy(); // Destruye el meteoro
         this.scene.start("GameOver", { puntaje: this.puntaje }); // Inicia la escena GameOver y pasa el puntaje
+        this.musicaFondo.stop();
+        this.puntaje = 0;
       },
       null,
       this
@@ -158,6 +161,7 @@ export default class Escena1 extends Phaser.Scene {
 
     this.musicaFondo = this.sound.add("musicaFondo", { loop: true });
     this.musicaFondo.play();
+    
 
     this.sonidoGrito = this.sound.add("grito");
 

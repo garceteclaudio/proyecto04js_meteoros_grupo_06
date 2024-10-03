@@ -22,7 +22,14 @@ export default class GameOver extends Phaser.Scene {
 
         this.add.image(400, 300, "fondoGameOver").setOrigin(0.5);
 
-        this.add.text(400, 300, `¡Has muerto! Juego Terminado. Puntaje: ${this.puntaje}` , {
+        this.add.text(400, 300, `¡Has muerto! Juego Terminado.` , {
+            fontSize: "30px",
+            fill: "#fff",
+            fontStyle: "bold",
+            aling: "center"
+        }).setOrigin(0.5);
+
+        this.add.text(400, 350, `Puntaje: ${this.puntaje}` , {
             fontSize: "30px",
             fill: "#fff",
             fontStyle: "bold",
