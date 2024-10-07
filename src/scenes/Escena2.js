@@ -19,21 +19,21 @@ export default class Escena2 extends Phaser.Scene {
   generarMeteoros() {
     if (this.juegoTerminado) return;
 
-    const y = Phaser.Math.Between(0, 600); // Randomize the Y position within the screen height
-    const meteoro = this.grupoMeteoros.create(800, y, "meteoro"); // Start on the right edge
-    meteoro.setVelocityX(-200); // Move left with a negative X velocity
+    const y = Phaser.Math.Between(0, 600);
+    const meteoro = this.grupoMeteoros.create(800, y, "meteoro");
+    meteoro.setVelocityX(-200); // Meteoro se mueve hacia la izquierda
   }
 
   dispararBala() {
     const tiempoActual = this.time.now;
 
     if (tiempoActual > this.siguienteDisparo) {
-      const bala = this.grupoBalas.get(this.jugador.x, this.jugador.y - 50);
+      const bala = this.grupoBalas.get(this.jugador.x + 50, this.jugador.y); // Posicionar la bala a la derecha de la nave
 
       if (bala) {
         bala.setActive(true);
         bala.setVisible(true);
-        bala.setVelocityY(-500);
+        bala.setVelocityX(500); // Disparar hacia la derecha
         this.siguienteDisparo = tiempoActual + 300;
 
         this.sonidoBala.play();
@@ -42,11 +42,8 @@ export default class Escena2 extends Phaser.Scene {
   }
 
   destruirMeteoro(bala, meteoro) {
-    // Destruir meteoro y bala
     meteoro.destroy();
     bala.destroy();
-
-    // Reproducir el sonido de la bala
     this.sonidoExplosion.play();
   }
 
@@ -63,11 +60,8 @@ export default class Escena2 extends Phaser.Scene {
       frameWidth: 60,
       frameHeight: 60,
     });
-    this.load.image("meteoro", "/public/resources/images/meteoro.png", {
-      frameWidth: 56,
-      frameHeight: 60,
-    });
-    this.load.image("bala", "/public/resources/images/bala.png");
+    this.load.image("meteoro", "/public/resources/images/meteoro.png");
+    this.load.image("bala", "/public/resources/images/balaHorizontal.png");
     this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3");
     this.load.audio("grito", "/public/resources/sounds/grito.mp3");
     this.load.audio("balaSonido", "/public/resources/sounds/balaSonido.mp3");
@@ -79,8 +73,9 @@ export default class Escena2 extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, "espacio");
-    this.jugador = this.physics.add.sprite(400, 550, "nave", 0);
+    this.jugador = this.physics.add.sprite(100, 300, "nave", 0);
     this.jugador.setCollideWorldBounds(true);
+    this.jugador.setAngle(90); // Nave rotada para disparar hacia la derecha
 
     this.grupoBalas = this.physics.add.group({
       defaultKey: "bala",
@@ -128,16 +123,15 @@ export default class Escena2 extends Phaser.Scene {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       right: Phaser.Input.Keyboard.KeyCodes.D,
-      space: Phaser.Input.Keyboard.KeyCodes.SPACE, // Barra espaciadora para disparar
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
     });
 
-    // aca tengo q poner esto: this.musicaFondo.stop();
     this.physics.add.collider(
       this.jugador,
       this.grupoMeteoros,
       (jugador, meteoro) => {
-        meteoro.destroy(); // Destruye el meteoro
-        this.scene.start("GameOver", { puntaje: this.puntaje }); // Inicia la escena GameOver y pasa el puntaje
+        meteoro.destroy();
+        this.scene.start("GameOver", { puntaje: this.puntaje });
         this.musicaFondo.stop();
         this.puntaje = 0;
       },
@@ -145,7 +139,6 @@ export default class Escena2 extends Phaser.Scene {
       this
     );
 
-    // Colisión entre balas y meteoros
     this.physics.add.collider(
       this.grupoBalas,
       this.grupoMeteoros,
@@ -190,7 +183,6 @@ export default class Escena2 extends Phaser.Scene {
       this.jugador.anims.play("normal", true);
     }
 
-    // Disparar balas cuando se presiona la barra espaciadora
     if (this.teclas.space.isDown) {
       this.dispararBala();
     }
