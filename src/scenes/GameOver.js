@@ -18,7 +18,7 @@ export default class GameOver extends Phaser.Scene {
     this.add.image(400, 300, "fondoGameOver").setOrigin(0.5);
 
     this.add
-      .text(400, 300, `¡Has muerto! Juego Terminado.`, {
+      .text(400, 250, `¡Has muerto! Juego Terminado.`, {
         fontSize: "30px",
         fill: "#fff",
         fontStyle: "bold",
@@ -27,7 +27,7 @@ export default class GameOver extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 350, `Puntaje: ${this.puntaje}`, {
+      .text(400, 300, `Puntaje: ${this.puntaje}`, {
         fontSize: "30px",
         fill: "#fff",
         fontStyle: "bold",
@@ -35,23 +35,13 @@ export default class GameOver extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add
-      .text(400, 400, "Presiona R para empezar de nuevo", {
+      this.add
+      .text(400, 350, "Escoge una escena para intentarlo de nuevo.", {
         fontSize: "20px",
         fill: "#fff",
         fontStyle: "bold",
         align: "center",
       })
       .setOrigin(0.5);
-
-    this.restartKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.R
-    );
-  }
-
-  update() {
-    if (Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.start("Escena 2");
-    }
   }
 }

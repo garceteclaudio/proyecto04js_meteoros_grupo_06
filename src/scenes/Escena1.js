@@ -1,6 +1,6 @@
 export default class Escena1 extends Phaser.Scene {
   constructor() {
-    super("Escena 1");
+    super({ key: "Escena 1" });
     this.jugador = null;
     this.grupoMeteoros = null;
     this.grupoBalas = null;
@@ -161,12 +161,8 @@ export default class Escena1 extends Phaser.Scene {
 
     this.musicaFondo = this.sound.add("musicaFondo", { loop: true });
     this.musicaFondo.play();
-    
-
     this.sonidoGrito = this.sound.add("grito");
-
     this.sonidoBala = this.sound.add("balaSonido");
-
     this.sonidoExplosion = this.sound.add("sonidoExplosion");
   }
 
