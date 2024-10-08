@@ -13,7 +13,7 @@ let config = {
       debug: false,
     },
   },
-  scene: [Escena2, GameOver],
+  //scene: [Escena2, GameOver],
   parent: "game-container",
 };
 
