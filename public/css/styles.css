@@ -22,6 +22,7 @@ main {
     align-items: center;
     flex-grow: 1;
     background: url('../resources/images/nebulosa.png');
+    flex-direction: column;
 }
 
 footer {
@@ -52,7 +53,34 @@ body::before {
     animation: estrellas 50s linear infinite;
 }
 
+/* Botones de las Escenas*/
+
+#botones-div {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 25px;
+  }
+  
+  #botones-div button {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 0px 15px;
+    border: 2px solid #6D00D360;
+    background-color: transparent;
+    color: #FFFFFFC7;
+    cursor: pointer;
+    animation: brillar 1.5s ease-in-out infinite alternate;
+  }
+  
+  #botones-div button:hover {
+    box-shadow: 0 0 10px #FFFFFFCC, 0 0 20px #FFFFFF99;
+    transform: scale(1.1);
+  }
+
 /* Animación para el fondo de estrellas */
+
 @keyframes estrellas {
     from {
         background-position: 0 0;
@@ -77,6 +105,7 @@ p {
 }
 
 /* Animación para la sombra del texto */
+
 @keyframes brillar {
     from {
         text-shadow: 0 0 20px #FFFFFF, 0 0 40px #6D00D3, 0 0 20px #FFFFFF;
