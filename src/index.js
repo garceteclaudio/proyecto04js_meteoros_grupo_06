@@ -1,4 +1,5 @@
 import Escena1 from "./scenes/Escena1.js";
+import Escena2 from "./scenes/Escena2.js";
 import GameOver from "./scenes/GameOver.js";
 
 let config = {
@@ -12,7 +13,7 @@ let config = {
       debug: false,
     },
   },
-  scene: [Escena1, GameOver],
+  scene: [Escena2, GameOver],
   parent: "game-container",
 };
 
