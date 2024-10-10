@@ -22,7 +22,7 @@ export default class GameOver extends Phaser.Scene {
         fontSize: "30px",
         fill: "#fff",
         fontStyle: "bold",
-        aling: "center",
+        align: "center",
       })
       .setOrigin(0.5);
 
@@ -31,17 +31,22 @@ export default class GameOver extends Phaser.Scene {
         fontSize: "30px",
         fill: "#fff",
         fontStyle: "bold",
-        aling: "center",
+        align: "center",
       })
       .setOrigin(0.5);
 
-      this.add
-      .text(400, 350, "Escoge una escena para intentarlo de nuevo.", {
+    this.add
+      .text(400, 350, "Presiona R para volver a jugar.", {
         fontSize: "20px",
         fill: "#fff",
         fontStyle: "bold",
         align: "center",
       })
       .setOrigin(0.5);
+
+    // Añadir un listener para la tecla R
+    this.input.keyboard.on("keydown-R", () => {
+      this.scene.start("Escena 1"); // Reiniciar el juego desde "Escena 1"
+    });
   }
 }
