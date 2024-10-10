@@ -172,7 +172,6 @@ export default class Escena2 extends Phaser.Scene {
       space: Phaser.Input.Keyboard.KeyCodes.SPACE,
     });
 
-    // aca tengo q poner esto: this.musicaFondo.stop();
     this.physics.add.collider(
       this.jugador,
       this.grupoMeteoros,
@@ -186,7 +185,7 @@ export default class Escena2 extends Phaser.Scene {
       this
     );
 
-    // Colisión entre balas y meteoros
+    // Colisiones
     this.physics.add.collider(
       this.grupoBalas,
       this.grupoMeteoros,
@@ -210,7 +209,7 @@ export default class Escena2 extends Phaser.Scene {
       null,
       this
     );
-
+    // FIN COLISIONES
     this.textoDePuntaje = this.add.text(16, 16, "Puntaje: 0", {
       fontSize: "32px",
       fill: "#fff",
