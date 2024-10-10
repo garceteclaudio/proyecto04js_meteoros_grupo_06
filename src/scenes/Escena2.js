@@ -15,6 +15,7 @@ export default class Escena2 extends Phaser.Scene {
     this.siguienteDisparo = 0;
     this.sonidoBala = null;
     this.sonidoExplosion = null;
+    this.fondoEspacio = null;
   }
   generarMeteoros() {
     if (this.juegoTerminado) return;
@@ -105,7 +106,12 @@ export default class Escena2 extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, "espacio");
+    // Reiniciar variables importantes
+    this.juegoTerminado = false;
+    this.puntaje = 0;
+
+    // Crear fondo como tileSprite
+    this.fondoEspacio = this.add.tileSprite(400, 300, 800, 600, "espacio");
     this.jugador = this.physics.add.sprite(100, 300, "nave", 0);
     this.jugador.setCollideWorldBounds(true);
     this.jugador.setAngle(90);
@@ -219,6 +225,9 @@ export default class Escena2 extends Phaser.Scene {
 
   update() {
     if (this.juegoTerminado) return;
+
+    // Mover el fondo hacia la izquierda
+    this.fondoEspacio.tilePositionX -= 2;
 
     this.jugador.setVelocity(0);
 
