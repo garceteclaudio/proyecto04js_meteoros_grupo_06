@@ -4,7 +4,7 @@ export default class Escena2 extends Phaser.Scene {
     this.jugador = null;
     this.grupoMeteoros = null;
     this.grupoBalas = null;
-    this.grupoEnemigosNave = null; // Nuevo grupo para enemigosNave
+    this.grupoEnemigosNave = null;
     this.cursors = null;
     this.teclas = null;
     this.puntaje = 0;
@@ -21,19 +21,19 @@ export default class Escena2 extends Phaser.Scene {
 
     const y = Phaser.Math.Between(0, 600);
     const meteoro = this.grupoMeteoros.create(800, y, "meteoro");
-    meteoro.setVelocityX(-200); // Meteoro se mueve hacia la izquierda
+    meteoro.setVelocityX(-200);
   }
 
   dispararBala() {
     const tiempoActual = this.time.now;
 
     if (tiempoActual > this.siguienteDisparo) {
-      const bala = this.grupoBalas.get(this.jugador.x + 50, this.jugador.y); // Posicionar la bala a la derecha de la nave
+      const bala = this.grupoBalas.get(this.jugador.x + 50, this.jugador.y);
 
       if (bala) {
         bala.setActive(true);
         bala.setVisible(true);
-        bala.setVelocityX(500); // Disparar hacia la derecha
+        bala.setVelocityX(500);
         this.siguienteDisparo = tiempoActual + 300;
 
         this.sonidoBala.play();
@@ -41,11 +41,8 @@ export default class Escena2 extends Phaser.Scene {
     }
   }
   destruirMeteoro(bala, meteoro) {
-    // Destruir meteoro y bala
     meteoro.destroy();
     bala.destroy();
-
-    // Reproducir el sonido de la bala
     this.sonidoExplosion.play();
   }
 
@@ -61,8 +58,8 @@ export default class Escena2 extends Phaser.Scene {
 
     const y = Phaser.Math.Between(50, 550);
     const enemigoNave = this.grupoEnemigosNave.create(800, y, "enemigoNave");
-    enemigoNave.setVelocityX(-150); // EnemigoNave se mueve hacia la izquierda
-    enemigoNave.vidas = 3; // Se requieren 3 disparos para destruir
+    enemigoNave.setVelocityX(-150);
+    enemigoNave.vidas = 3;
   }
 
   colisionBalaEnemigo(bala, enemigoNave) {
@@ -97,7 +94,7 @@ export default class Escena2 extends Phaser.Scene {
     });
     this.load.image("meteoro", "/public/resources/images/meteoro.png");
     this.load.image("bala2", "/public/resources/images/balaHorizontal.png");
-    this.load.image("enemigoNave", "/public/resources/images/enemigoNave.png"); // Cargar imagen del enemigo
+    this.load.image("enemigoNave", "/public/resources/images/enemigoNave.png");
     this.load.audio("musicaFondo", "/public/resources/sounds/9.mp3");
     this.load.audio("grito", "/public/resources/sounds/grito.mp3");
     this.load.audio("balaSonido", "/public/resources/sounds/balaSonido.mp3");
@@ -111,7 +108,7 @@ export default class Escena2 extends Phaser.Scene {
     this.add.image(400, 300, "espacio");
     this.jugador = this.physics.add.sprite(100, 300, "nave", 0);
     this.jugador.setCollideWorldBounds(true);
-    this.jugador.setAngle(90); // Nave rotada para disparar hacia la derecha
+    this.jugador.setAngle(90);
 
     this.grupoBalas = this.physics.add.group({
       defaultKey: "bala2",
@@ -141,7 +138,7 @@ export default class Escena2 extends Phaser.Scene {
 
     // Generar enemigosNave periódicamente
     this.time.addEvent({
-      delay: 1000, // Cada 2 segundos
+      delay: 1000,
       callback: this.generarEnemigosNave,
       callbackScope: this,
       loop: true,
@@ -174,7 +171,7 @@ export default class Escena2 extends Phaser.Scene {
       this.jugador,
       this.grupoMeteoros,
       (jugador, meteoro) => {
-        meteoro.destroy(); // Destruye el meteoro
+        meteoro.destroy();
         this.scene.start("GameOver", { puntaje: this.puntaje }); // Inicia la escena GameOver y pasa el puntaje
         this.musicaFondo.stop();
         this.puntaje = 0;
