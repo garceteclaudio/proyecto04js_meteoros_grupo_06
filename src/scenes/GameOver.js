@@ -18,7 +18,7 @@ export default class GameOver extends Phaser.Scene {
     this.add.image(400, 300, "fondoGameOver").setOrigin(0.5);
 
     this.add
-      .text(400, 250, `¡Has muerto! Juego Terminado.`, {
+      .text(400, 250, `Juego Terminado.`, {
         fontSize: "30px",
         fill: "#fff",
         fontStyle: "bold",
@@ -46,7 +46,7 @@ export default class GameOver extends Phaser.Scene {
 
     // Añadir un listener para la tecla R
     this.input.keyboard.on("keydown-R", () => {
-      this.scene.start("Escena 1"); // Reiniciar el juego desde "Escena 1"
+      this.scene.start("Escena1", { puntaje: 0 }); // Reiniciar el juego desde "Escena1" con puntaje en 0
     });
   }
 }

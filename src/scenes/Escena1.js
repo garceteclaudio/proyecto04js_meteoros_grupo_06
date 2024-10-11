@@ -1,6 +1,6 @@
 export default class Escena1 extends Phaser.Scene {
   constructor() {
-    super({ key: "Escena 1" });
+    super({ key: "Escena1" });
     this.jugador = null;
     this.grupoMeteoros = null;
     this.grupoBalas = null;
@@ -15,7 +15,10 @@ export default class Escena1 extends Phaser.Scene {
     this.sonidoBala = null;
     this.sonidoExplosion = null;
   }
-
+  init(data) {
+    this.puntaje = data.puntaje || 0; // Set the score from data
+    this.juegoTerminado = false; // Reset juegoTerminado when the scene starts
+  }
   generarMeteoros() {
     if (this.juegoTerminado) return;
 
@@ -42,18 +45,21 @@ export default class Escena1 extends Phaser.Scene {
   }
 
   destruirMeteoro(bala, meteoro) {
-    // Destruir meteoro y bala
     meteoro.destroy();
     bala.destroy();
-
-    // Reproducir el sonido de la bala
     this.sonidoExplosion.play();
   }
 
   incrementarPuntaje() {
     if (!this.juegoTerminado) {
-      this.puntaje += 1;
+      this.puntaje += 3;
       this.textoDePuntaje.setText(`Puntaje: ${this.puntaje}`);
+
+      if (this.puntaje > 400) {
+        // Pass the score to BonusTrack when starting the scene
+        this.musicaFondo.stop();
+        this.scene.start("BonusTrack", { puntaje: this.puntaje });
+      }
     }
   }
 
@@ -84,7 +90,7 @@ export default class Escena1 extends Phaser.Scene {
 
     this.grupoBalas = this.physics.add.group({
       defaultKey: "bala",
-      maxSize: 20,
+      maxSize: 100,
     });
 
     this.grupoMeteoros = this.physics.add.group();
@@ -128,15 +134,14 @@ export default class Escena1 extends Phaser.Scene {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       right: Phaser.Input.Keyboard.KeyCodes.D,
-      space: Phaser.Input.Keyboard.KeyCodes.SPACE, // Barra espaciadora para disparar
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
     });
 
-    // aca tengo q poner esto: this.musicaFondo.stop();
     this.physics.add.collider(
       this.jugador,
       this.grupoMeteoros,
       (jugador, meteoro) => {
-        meteoro.destroy(); // Destruye el meteoro
+        meteoro.destroy();
         this.scene.start("GameOver", { puntaje: this.puntaje }); // Inicia la escena GameOver y pasa el puntaje
         this.musicaFondo.stop();
         this.puntaje = 0;
@@ -145,7 +150,6 @@ export default class Escena1 extends Phaser.Scene {
       this
     );
 
-    // Colisión entre balas y meteoros
     this.physics.add.collider(
       this.grupoBalas,
       this.grupoMeteoros,
@@ -187,7 +191,6 @@ export default class Escena1 extends Phaser.Scene {
       this.jugador.anims.play("normal", true);
     }
 
-    // Disparar balas cuando se presiona la barra espaciadora
     if (this.teclas.space.isDown) {
       this.dispararBala();
     }
